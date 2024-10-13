@@ -1,0 +1,53 @@
+def GetXandYLists(data: np.array):
+    x = []
+    y = []
+    for simulation_matrix in data:
+        init_state_of_simulation = []
+        for num, time_frame in enumerate(simulation_matrix):
+            if num == 0:
+                init_state_of_simulation = time_frame
+            else:
+                init_state_of_simulation[0] = time_frame[0]  # put current time into the vector instead of the 0
+                x.append(init_state_of_simulation.copy())
+                y.append([time_frame[1], time_frame[2], time_frame[5], time_frame[6], time_frame[9], time_frame[10]])
+
+
+    return np.array(x), np.array(y)
+
+def plot_y_yhat(y_val, y_pred, plot_title="plot"):
+    labels = ['x_1', 'y_1', 'x_2', 'y_2', 'x_3', 'y_3']
+    MAX = 500
+    if len(y_val) > MAX:
+        idx = np.random.choice(len(y_val), MAX, replace=False)
+    else:
+        idx = np.arange(len(y_val))
+    plt.figure(figsize=(10, 10))
+    for i in range(6):
+        x0 = np.min(y_val[idx, i])
+        x1 = np.max(y_val[idx, i])
+        plt.subplot(3, 2, i + 1)
+        plt.scatter(y_val[idx, i], y_pred[idx, i])
+        plt.xlabel('True ' + labels[i])
+        plt.ylabel('Predicted ' + labels[i])
+        plt.plot([x0, x1], [x0, x1], color='red')
+        plt.axis('square')
+    plt.savefig(plot_title + '.pdf')
+    plt.show()
+
+#Regression
+x, y = GetXandYLists(train_data_cleaned_s2)
+x_train, x_t_v, y_train, y_t_v = train_test_split(x, y, test_size=0.3, random_state=42)
+x_val, x_test, y_val, y_test = train_test_split(x_t_v, y_t_v, test_size=0.5, random_state=42) 
+
+
+pipe = Pipeline([('std', StandardScaler()),
+                 ('estimator', LinearRegression())])
+pipe.fit(x_train, y_train)
+plot_y_yhat(y_val, pipe.predict(X_val))
+
+plot_y_yhat(y_val, pipe.predict(X_val))
+
+noise = 0.1
+results = {}
+results[noise] = (train_mse, val_mse)
+print(f"Noise: {noise} -> Train MSE: {train_mse:.2f}, Validation MSE: {val_mse:.2f}")
