@@ -16,10 +16,16 @@ def GetXandYLists(data: np.array, account_for_velocity=False):
                     init_state_of_simulation = [time_frame[0],  # time
                                                 time_frame[1],  # x1
                                                 time_frame[2],  # y1
+                                                0,  # vx1
+                                                0,  # vy1
                                                 time_frame[5],  # x2
                                                 time_frame[6],  # y2
+                                                0,  # vx2
+                                                0,  # vy2
                                                 time_frame[9],  # x3
-                                                time_frame[10]]  # y3
+                                                time_frame[10],  # y3
+                                                0,  # vx3
+                                                0]  # vy3
             else:
                 init_state_of_simulation[0] = time_frame[0]  # put current time into the vector instead of the 0
                 x.append(init_state_of_simulation.copy())
