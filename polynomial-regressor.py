@@ -10,8 +10,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import RidgeCV, LinearRegression
 from sklearn.model_selection import train_test_split
 
-#data = pd.read_csv(
-#    "C:\FCT-NOVA-2024\AA\\assignment1\machine-learning-nova-2024-the-three-body-proble\mlNOVA\mlNOVA\X_train.csv")
 
 data = np.load("data.npy", allow_pickle=True)
 np.random.shuffle(data)
@@ -72,12 +70,12 @@ def GetXandYLists(data: np.array, account_for_velocity=False):
 
 
 def validate_poly_regression(X_train, y_train, X_val, y_val,
-                             regressor=None, degrees=range(1, 8),
+                             regressor=None, degrees=range(1, 7),
                              max_features=None):
     best_model = None
     best_error = np.inf
     if regressor is None:
-        alphas = np.logspace(-6, 6, 13)
+        alphas = [0.0001, 0.001, 0.01, 0.1]
         regressor = RidgeCV(alphas=alphas)
     for deg in degrees:
         polyreg = make_pipeline(PolynomialFeatures(deg),
@@ -89,6 +87,8 @@ def validate_poly_regression(X_train, y_train, X_val, y_val,
         y_pred = polyreg.predict(X_val)
         plot_y_yhat(y_val, y_pred)
         print(polyreg.score(X_val, y_val))
+        #print degrees created by the model
+        print(polyreg.named_steps['polynomialfeatures'].n_output_features_)
         rmse = math.sqrt(mean_squared_error(y_val, y_pred))
         print(f'Degree: {deg} got RMSE of value: {rmse}')
         if rmse < best_error:
@@ -100,12 +100,4 @@ def validate_poly_regression(X_train, y_train, X_val, y_val,
 X, y = GetXandYLists(data1pct)
 X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, test_size=0.15, random_state=42)
-model, error = validate_poly_regression(X_train, y_train, X_val, y_val, regressor=LinearRegression())
-
-
-# plt.figure()
-# print(X.shape, y.shape)
-# plt.scatter(X,y)
-# plt.plot(X,polyreg.predict(X),color="black")
-# plt.xlabel('X')
-# plt.ylabel('y')
+model, error = validate_poly_regression(X_train, y_train, X_val, y_val, regressor=None)
