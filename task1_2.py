@@ -68,9 +68,14 @@ X_test = np.load("X_test.npy", allow_pickle=True)
 
 # Run linear model
 rms, test_pred = linearmodel(x, y, X_test)
-ids = np.arange(1, test_pred.shape[0] + 1).reshape(-1, 1)
+ids = np.arange(0, test_pred.shape[0]).reshape(-1, 1)
+# ids = ids.astype(np.int32)
 y_pred = np.hstack((ids, test_pred))
-y_pred_df = pd.DataFrame(y_pred, columns=["id", "x_1", "y_1", "x_2", "y_2", "x_3", "y_3"])
+
+y_pred_df = pd.DataFrame(y_pred, columns=["Id", "x_1", "y_1", "x_2", "y_2", "x_3", "y_3"])
+# make first column'Id' in to int32
+y_pred_df['Id'] = y_pred_df['Id'].astype(np.int32)
+print(y_pred_df[:3])
 y_pred_df.to_csv("baseline-model.csv", index=False)
 
 # result
