@@ -161,3 +161,7 @@ z3.pop(0)
 # Shuffle the dataset
 np.random.shuffle(train_data_cleaned_s2)
 
+# save train_data_cleaned_s2 as .npy files
+np.save("X_train.npy", train_data_cleaned_s2)
+
+
