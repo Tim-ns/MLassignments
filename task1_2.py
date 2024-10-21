@@ -27,7 +27,7 @@ def GetXandYLists(data: np.array, account_for_velocity=False):
                                                 time_frame[5],  # x2
                                                 time_frame[6],  # y2
                                                 time_frame[9],  # x3
-                                                time_frame[10], # y3
+                                                time_frame[10]  # y3
                                                 ] 
                     
             else:

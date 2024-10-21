@@ -12,30 +12,10 @@ from scipy import stats
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from plot_y_yhat import plot_y_yhat
 
-data = np.load("data.npy", allow_pickle=True)
+data = np.load("X_train.npy", allow_pickle=True)
 np.random.shuffle(data)
-
-def plot_y_yhat(y_val, y_pred, plot_title="plot"):
-    labels = ['x_1', 'y_1', 'x_2', 'y_2', 'x_3', 'y_3']
-    MAX = 500
-    if len(y_val) > MAX:
-        idx = np.random.choice(len(y_val), MAX, replace=False)
-    else:
-        idx = np.arange(len(y_val))
-    plt.figure(figsize=(10, 10))
-    for i in range(6):
-        x0 = np.min(y_val[idx, i])
-        x1 = np.max(y_val[idx, i])
-        plt.subplot(3, 2, i + 1)
-        plt.scatter(y_val[idx, i], y_pred[idx, i])
-        plt.xlabel('True ' + labels[i])
-        plt.ylabel('Predicted ' + labels[i])
-        plt.plot([x0, x1], [x0, x1], color='red')
-        plt.axis('square')
-    plt.savefig("knn-plots/k_" + plot_title + '.pdf')
-    plt.show()
-
 
 def validate_knn_regression(X_train, y_train, X_val, y_val, k=range(1, 15)):
     best_model = None
@@ -64,11 +44,12 @@ def GetXandYLists(data: np.array, account_for_velocity=False):
                 else:
                     init_state_of_simulation = [time_frame[0],  # time
                                                 time_frame[1],  # x1
-                                                time_frame[2],
-                                                time_frame[3],  # x2
-                                                time_frame[4],
-                                                time_frame[5],  # x3
-                                                time_frame[6]]
+                                                time_frame[2],  # y1
+                                                time_frame[5],  # x2
+                                                time_frame[6],  # y2
+                                                time_frame[9],  # x3
+                                                time_frame[10]  # y3
+                                                ]
             else:
                 init_state_of_simulation[0] = time_frame[0]  # put current time into the vector instead of the 0
                 x.append(init_state_of_simulation.copy())
@@ -79,9 +60,6 @@ def GetXandYLists(data: np.array, account_for_velocity=False):
 
 
 x, y = GetXandYLists(data)
-print(x.shape, y.shape)
-results = {}
-noise = 0.1
 x_train_val, x_test, y_train_val, y_test = train_test_split(x, y, test_size=0.2)
 x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2)
 
